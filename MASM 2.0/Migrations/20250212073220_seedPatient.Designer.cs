@@ -4,6 +4,7 @@ using MASM_2._0.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MASM_2._0.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250212073220_seedPatient")]
+    partial class seedPatient
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,9 +44,6 @@ namespace MASM_2._0.Migrations
 
                     b.Property<int?>("CivilStatus")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -86,7 +86,6 @@ namespace MASM_2._0.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 2, 12, 7, 43, 53, 722, DateTimeKind.Utc).AddTicks(6606),
                             Email = "antepuesto.erwin@gmail.com",
                             EmailVerified = false,
                             MobileNumber = "09123456789",
@@ -96,7 +95,6 @@ namespace MASM_2._0.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 2, 12, 7, 43, 53, 722, DateTimeKind.Utc).AddTicks(6611),
                             Email = "antepuesto.belle@gmail.com",
                             EmailVerified = false,
                             MobileNumber = "09123456788",
@@ -106,7 +104,6 @@ namespace MASM_2._0.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 2, 12, 7, 43, 53, 722, DateTimeKind.Utc).AddTicks(6612),
                             Email = "antepuesto.aubrey@gmail.com",
                             EmailVerified = false,
                             MobileNumber = "09123456787",
