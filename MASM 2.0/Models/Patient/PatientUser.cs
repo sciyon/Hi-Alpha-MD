@@ -2,7 +2,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace MASM_2._0.Models
+namespace MASM_2._0.Models.Patient
 {
 	public class PatientUser : IdentityUser
 	{

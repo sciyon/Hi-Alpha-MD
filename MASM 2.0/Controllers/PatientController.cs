@@ -1,5 +1,4 @@
-﻿using MASM_2._0.Models;
-using MASM_2._0.ViewModels;
+﻿using MASM_2._0.Models.Patient;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
@@ -55,6 +54,7 @@ namespace MASM_2._0.Controllers
 
 			if (result.Succeeded)
 			{
+				await _userManager.AddToRoleAsync(patientUser, "Patient"); 
 				await _signInManager.SignInAsync(patientUser, isPersistent: false);
 				return RedirectToAction("Index", "Patient");
 			}
