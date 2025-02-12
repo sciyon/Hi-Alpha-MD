@@ -1,0 +1,93 @@
+﻿@model MASM_2._0.ViewModels.PatientEditViewModel
+
+<form method="post">
+	<div class="border p-3 mt-4">
+		<div class="row pb-2">
+			<h1>Update Patient</h1>
+			<hr />
+		</div>
+
+		<input type="hidden" asp-for="Id" />
+
+		<div class="mb-3">
+			<label asp-for="Email"></label>
+			<input asp-for="Email" type="email" class="form-control" required>
+			<span asp-validation-for="Email" class="text-danger"></span>
+		</div>
+
+		<div class="mb-3">
+			<label asp-for="MobileNumber"></label>
+			<input asp-for="MobileNumber" class="form-control" required>
+			<span asp-validation-for="MobileNumber" class="text-danger"></span>
+		</div>
+
+		<div class="mb-3">
+			<label asp-for="FirstName"></label>
+			<input asp-for="FirstName" class="form-control">
+		</div>
+
+		<div class="mb-3">
+			<label asp-for="LastName"></label>
+			<input asp-for="LastName" class="form-control">
+		</div>
+
+		<div class="mb-3">
+			<label asp-for="Address"></label>
+			<input asp-for="Address" class="form-control">
+		</div>
+
+		<div class="mb-3">
+			<label asp-for="BirthDate"></label>
+			<input asp-for="BirthDate" type="date" class="form-control">
+		</div>
+
+		<div class="mb-3">
+			<label asp-for="Sex"></label>
+			<select asp-for="Sex" asp-items="Html.GetEnumSelectList<Sex>()" class="form-control">
+				<option value="">Select Sex</option>
+			</select>
+		</div>
+
+		<div class="mb-3">
+			<label asp-for="CivilStatus"></label>
+			<select asp-for="CivilStatus" asp-items="Html.GetEnumSelectList<CivilStatus>()" class="form-control">
+				<option value="">Select Civil Status</option>
+			</select>
+		</div>
+
+		<div class="mb-3">
+			<label asp-for="BloodType"></label>
+			<select asp-for="BloodType" asp-items="Html.GetEnumSelectList<BloodType>()" class="form-control">
+				<option value="">Select Blood Type</option>
+			</select>
+		</div>
+
+		<div class="mb-3">
+			<label asp-for="EmergencyContact"></label>
+			<input asp-for="EmergencyContact" class="form-control">
+		</div>
+
+		<div class="mb-3">
+			<label asp-for="EmergencyContactNumber"></label>
+			<input asp-for="EmergencyContactNumber" class="form-control">
+		</div>
+
+		<div class="form-check">
+			<input asp-for="EmailVerified" class="form-check-input" type="checkbox">
+			<label class="form-check-label" asp-for="EmailVerified"></label>
+		</div>
+
+		<div class="mb-3">
+			<label asp-for="Status"></label>
+			<select asp-for="Status" asp-items="Html.GetEnumSelectList<PatientStatus>()" class="form-control">
+				<option value="">Select Status</option>
+			</select>
+		</div>
+
+		<button type="submit" class="btn btn-primary py-2 px-3">Save Changes</button>
+	</div>
+</form>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}

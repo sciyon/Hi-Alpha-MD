@@ -61,6 +61,77 @@ namespace MASM_2._0.Controllers
 
 			return RedirectToAction("Index");
 		}
+		public IActionResult Edit(int? id)
+		{
+			if (id == null || id == 0)
+			{
+				return NotFound();
+			}
+
+			Patient? patient = _db.Patients.Find(id);
+			if (patient == null)
+			{
+				return NotFound();
+			}
+
+			var patientEditViewModel = new ViewModels.PatientEditViewModel
+			{
+				Id = patient.Id,
+				Email = patient.Email,
+				MobileNumber = patient.MobileNumber,
+				FirstName = patient.FirstName,
+				LastName = patient.LastName,
+				Address = patient.Address,
+				BirthDate = patient.BirthDate,
+				Sex = patient.Sex,
+				CivilStatus = patient.CivilStatus,
+				BloodType = patient.BloodType,
+				EmergencyContact = patient.EmergencyContact,
+				EmergencyContactNumber = patient.EmergencyContactNumber,
+				EmailVerified = patient.EmailVerified,
+				Status = patient.Status
+			};
+
+			return View(patientEditViewModel);
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public IActionResult Edit(ViewModels.PatientEditViewModel model)
+		{
+			if (!ModelState.IsValid)
+			{
+				return View(model);
+			}
+
+			var patient = _db.Patients.Find(model.Id);
+			if (patient == null)
+			{
+				return NotFound();
+			}
+
+			// Update patient fields
+			patient.Email = model.Email;
+			patient.MobileNumber = model.MobileNumber;
+			patient.FirstName = model.FirstName;
+			patient.LastName = model.LastName;
+			patient.Address = model.Address;
+			patient.BirthDate = model.BirthDate;
+			patient.Sex = model.Sex;
+			patient.CivilStatus = model.CivilStatus;
+			patient.BloodType = model.BloodType;
+			patient.EmergencyContact = model.EmergencyContact;
+			patient.EmergencyContactNumber = model.EmergencyContactNumber;
+			patient.EmailVerified = model.EmailVerified;
+			patient.Status = model.Status;
+
+			_db.Patients.Update(patient);
+			_db.SaveChanges();
+
+			return RedirectToAction("Index");
+		}
+
+
 
 		public IActionResult Login()
 		{
