@@ -2,33 +2,35 @@
 
 <h1>Patients List</h1>
 
-<table class="table table-bordered table-striped">
-	<thead>
-		<tr>
-			<th>
-				Email Address
-			</th>
-			<th>
-				Mobile Number
-			</th>
-			<th>
-				Status
-			</th>
-		</tr>
-	</thead>
-	<tbody>
-		@foreach(var patient in Model.OrderBy(u=>u.CreatedAt)){
+<div class="container">
+	<table class="table table-bordered table-striped">
+		<thead>
 			<tr>
-				<td>
-					@patient.Email
-				</td>
-				<td>
-					@patient.MobileNumber
-				</td>
-				<td>
-					@patient.Status
-				</td>
+				<th>
+					Email Address
+				</th>
+				<th>
+					Mobile Number
+				</th>
+				<th>
+					Status
+				</th>
 			</tr>
-		}
-	</tbody>
-</table>
+		</thead>
+		<tbody>
+			@foreach(var patient in Model.OrderBy(u=>u.CreatedAt)){
+				<tr>
+					<td>
+						@patient.Email
+					</td>
+					<td>
+						@patient.MobileNumber
+					</td>
+					<td>
+						@patient.Status
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+</div>

@@ -16,5 +16,14 @@ namespace MASM_2._0.Controllers
 			List<Patient> patients = _db.Patients.ToList();
 			return View(patients);
 		}
+
+		public IActionResult Register()
+		{
+			return View();
+		}
+		public IActionResult Login()
+		{
+			return View();
+		}
 	}
 }
