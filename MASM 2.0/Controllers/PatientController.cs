@@ -1,80 +1,107 @@
-﻿using MASM_2._0.Data;
-using MASM_2._0.Models;
-using Microsoft.AspNetCore.Mvc;
+﻿using MASM_2._0.Models;
+using MASM_2._0.ViewModels;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace MASM_2._0.Controllers
 {
 	public class PatientController : Controller
 	{
-		private readonly ApplicationDbContext _db;
-		private readonly IPasswordHasher<Patient> _passwordHasher;
+		private readonly UserManager<PatientUser> _userManager;
+		private readonly SignInManager<PatientUser> _signInManager;
 
-		public PatientController(ApplicationDbContext db)
+		public PatientController(UserManager<PatientUser> userManager, SignInManager<PatientUser> signInManager)
 		{
-			_db = db;
-			_passwordHasher = new PasswordHasher<Patient>();
+			_userManager = userManager;
+			_signInManager = signInManager;
 		}
 
-		public IActionResult Index()
+		public async Task<IActionResult> Index()
 		{
-			List<Patient> patients = _db.Patients.ToList();
+			var patients = await Task.FromResult(_userManager.Users.ToList());
 			return View(patients);
 		}
 
-		public IActionResult Register()
-		{
-			return View();
-		}
+		public IActionResult Register() => View();
 
 		[HttpPost]
-		public IActionResult Register(PatientViewModel model)
+		public async Task<IActionResult> Register(PatientRegisterViewModel model)
 		{
-			// Check if the email already exists
-			if (_db.Patients.Any(p => p.Email == model.Email))
-			{
-				ModelState.AddModelError("Email", "Email is already in use.");
-			}
+			if (!ModelState.IsValid) return View(model);
 
-			// Enforce password length manually (extra security)
-			if (model.Password.Length < 8)
+			var patientUser = new PatientUser
 			{
-				ModelState.AddModelError("Password", "Password must be at least 8 characters long.");
-			}
-
-			if (!ModelState.IsValid)
-			{
-				return View(model);
-			}
-
-			// Hash the password
-			var patient = new Patient
-			{
+				UserName = model.Email,
 				Email = model.Email,
-				MobileNumber = model.MobileNumber
+				PhoneNumber = model.MobileNumber,
+				MobileNumber = model.MobileNumber,
+				FirstName = model.FirstName,
+				LastName = model.LastName,
+				Address = model.Address,
+				BirthDate = model.BirthDate,
+				Sex = model.Sex,
+				CivilStatus = model.CivilStatus,
+				BloodType = model.BloodType,
+				EmergencyContact = model.EmergencyContact,
+				EmergencyContactNumber = model.EmergencyContactNumber,
+				EmailVerified = false,
+				Status = PatientStatus.Active,
+				CreatedAt = DateTime.UtcNow
 			};
 
-			patient.Password = _passwordHasher.HashPassword(patient, model.Password);
+			var result = await _userManager.CreateAsync(patientUser, model.Password);
 
-			_db.Patients.Add(patient);
-			_db.SaveChanges();
+			if (result.Succeeded)
+			{
+				await _signInManager.SignInAsync(patientUser, isPersistent: false);
+				return RedirectToAction("Index", "Patient");
+			}
 
-			return RedirectToAction("Index");
+			foreach (var error in result.Errors)
+			{
+				ModelState.AddModelError(string.Empty, error.Description);
+			}
+
+			return View(model);
 		}
-		public IActionResult Edit(int? id)
+
+		public IActionResult Login() => View();
+
+		[HttpPost]
+		public async Task<IActionResult> Login(PatientLoginViewModel model)
 		{
-			if (id == null || id == 0)
+			if (!ModelState.IsValid) return View(model);
+
+			var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
+			if (result.Succeeded)
 			{
-				return NotFound();
+				var user = await _userManager.FindByEmailAsync(model.Email);
+				if (user != null && await _userManager.IsInRoleAsync(user, "Patient"))
+				{
+					return RedirectToAction("Index", "Patient"); // Redirect to Patient Index
+				}
+
+				return RedirectToAction("Index", "Home"); // Default redirect
 			}
 
-			Patient? patient = _db.Patients.Find(id);
-			if (patient == null)
-			{
-				return NotFound();
-			}
+			ModelState.AddModelError(string.Empty, "Invalid email or password.");
+			return View(model);
+		}
 
-			var patientEditViewModel = new ViewModels.PatientEditViewModel
+		public async Task<IActionResult> Logout()
+		{
+			await _signInManager.SignOutAsync();
+			return RedirectToAction("Index", "Home");
+		}
+
+		public async Task<IActionResult> Edit(string id)
+		{
+			var patient = await _userManager.FindByIdAsync(id);
+			if (patient == null) return NotFound();
+
+			var model = new PatientEditViewModel
 			{
 				Id = patient.Id,
 				Email = patient.Email,
@@ -92,25 +119,17 @@ namespace MASM_2._0.Controllers
 				Status = patient.Status
 			};
 
-			return View(patientEditViewModel);
+			return View(model);
 		}
 
 		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public IActionResult Edit(ViewModels.PatientEditViewModel model)
+		public async Task<IActionResult> Edit(PatientEditViewModel model)
 		{
-			if (!ModelState.IsValid)
-			{
-				return View(model);
-			}
+			if (!ModelState.IsValid) return View(model);
 
-			var patient = _db.Patients.Find(model.Id);
-			if (patient == null)
-			{
-				return NotFound();
-			}
+			var patient = await _userManager.FindByIdAsync(model.Id);
+			if (patient == null) return NotFound();
 
-			// Update patient fields
 			patient.Email = model.Email;
 			patient.MobileNumber = model.MobileNumber;
 			patient.FirstName = model.FirstName;
@@ -125,17 +144,8 @@ namespace MASM_2._0.Controllers
 			patient.EmailVerified = model.EmailVerified;
 			patient.Status = model.Status;
 
-			_db.Patients.Update(patient);
-			_db.SaveChanges();
-
+			await _userManager.UpdateAsync(patient);
 			return RedirectToAction("Index");
-		}
-
-
-
-		public IActionResult Login()
-		{
-			return View();
 		}
 	}
 }

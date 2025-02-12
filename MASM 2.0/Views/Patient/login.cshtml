@@ -1,2 +1,50 @@
-﻿<h1>Login</h1>
+﻿@model MASM_2._0.ViewModels.PatientLoginViewModel
 
+<form method="post">
+    <h1>Patient Login</h1>
+    <div class="mb-3">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control">
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+	<div class="mb-3">
+		<label asp-for="Password"></label>
+		<div class="input-group">
+			<input asp-for="Password" type="password" class="form-control border-primary" id="passwordField" required>
+			<button type="button" class="btn btn-outline-primary" onclick="togglePassword('passwordField', 'passwordToggle')">
+				<i id="passwordToggle" class="bi bi-eye"></i>
+			</button>
+		</div>
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+	@if (!ViewData.ModelState.IsValid)
+	{
+		<div class="alert alert-danger">
+			@foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+			{
+				<p>@error.ErrorMessage</p>
+			}
+		</div>
+	}
+    <button type="submit" class="btn btn-primary">Login</button>
+</form>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+	<script>
+		function togglePassword(inputId, iconId) {
+			let input = document.getElementById(inputId);
+			let icon = document.getElementById(iconId);
+			if (input.type === "password") {
+				input.type = "text";
+				icon.classList.remove("bi-eye");
+				icon.classList.add("bi-eye-slash");
+			} else {
+				input.type = "password";
+				icon.classList.remove("bi-eye-slash");
+				icon.classList.add("bi-eye");
+			}
+		}
+	</script>
+}
