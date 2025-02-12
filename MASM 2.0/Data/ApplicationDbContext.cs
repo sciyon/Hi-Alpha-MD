@@ -37,6 +37,11 @@ namespace MASM_2._0.Data
 					Password = "password"
 				}
 			);
+			{
+				modelBuilder.Entity<Patient>()
+					.HasIndex(p => p.Email)
+					.IsUnique(); // Enforce unique constraint
+			}
 		}
 	}
 }

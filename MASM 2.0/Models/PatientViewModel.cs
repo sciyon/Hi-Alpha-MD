@@ -17,6 +17,7 @@ namespace MASM_2._0.Models
 
 		[Required(ErrorMessage = "Password is required.")]
 		[DataType(DataType.Password)]
+		[MinLength(8, ErrorMessage = "Password must be at least 8 characters in length.")]
 		[DisplayName("Password")]
 		public string Password { get; set; }
 
