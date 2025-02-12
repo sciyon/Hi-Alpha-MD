@@ -3274,6 +3274,21 @@ textarea.form-control-lg {
     border-radius: var(--bs-border-radius);
 }
 
+.custom-button {
+    background-color: white;
+    color: var(--bs-primary); /* Bootstrap primary color */
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: bold;
+    transition: background-color 0.01s, color 0.01s;
+}
+
+.custom-button:hover {
+    background-color: var(--bs-primary);
+    color: white;
+}
+
 .was-validated :invalid ~ .invalid-feedback,
 .was-validated :invalid ~ .invalid-tooltip,
 .is-invalid ~ .invalid-feedback,
