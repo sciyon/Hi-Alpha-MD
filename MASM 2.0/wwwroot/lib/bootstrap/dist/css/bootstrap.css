@@ -2966,6 +2966,8 @@ textarea.form-control-lg {
     }
 }
 
+
+
 .form-floating > .form-control,
 .form-floating > .form-control-plaintext {
     padding: 1rem 0.75rem;
@@ -4284,6 +4286,10 @@ textarea.form-control-lg {
     padding-left: 0;
     margin-bottom: 0;
     list-style: none;
+}
+
+.nav-link.bg-primary:hover {
+    background-color: #0056b3 !important; /* Darker shade of primary */
 }
 
 .nav-link {

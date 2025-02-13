@@ -20,3 +20,7 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.nav-link.bg-primary:hover {
+    background-color: #4f8274 !important; /* Darker shade of primary */
+}

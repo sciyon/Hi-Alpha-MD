@@ -1,7 +1,10 @@
 ﻿using MASM_2._0.Models.Patient;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace MASM_2._0.Controllers
@@ -69,26 +72,37 @@ namespace MASM_2._0.Controllers
 
 		public IActionResult Login() => View();
 
-		[HttpPost]
 		public async Task<IActionResult> Login(PatientLoginViewModel model)
 		{
 			if (!ModelState.IsValid) return View(model);
 
-			var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
-			if (result.Succeeded)
+			var user = await _userManager.FindByEmailAsync(model.Email);
+			if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
 			{
-				var user = await _userManager.FindByEmailAsync(model.Email);
-				if (user != null && await _userManager.IsInRoleAsync(user, "Patient"))
-				{
-					return RedirectToAction("Index", "Patient"); // Redirect to Patient Index
-				}
-
-				return RedirectToAction("Index", "Home"); // Default redirect
+				ModelState.AddModelError("", "Invalid login attempt.");
+				return View(model);
 			}
 
-			ModelState.AddModelError(string.Empty, "Invalid email or password.");
-			return View(model);
+			// Get the user's roles (returns a list)
+			var roles = await _userManager.GetRolesAsync(user);
+			var role = roles.FirstOrDefault() ?? "Patient"; // Default to "Patient" if no role is assigned
+
+			var claims = new List<Claim>
+			{
+				new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
+				new Claim(ClaimTypes.Role, role), // Store role correctly
+				new Claim("FirstName", user.FirstName ?? ""),
+				new Claim("LastName", user.LastName ?? "")
+			};
+
+			var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+			var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+			await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
+
+			return RedirectToAction("Dashboard", "Index");
 		}
+
 
 		public async Task<IActionResult> Logout()
 		{
