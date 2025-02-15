@@ -1,26 +1,26 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using MASM.Models;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 
 namespace MASM_2._0.Controllers
 {
 	public class PatientController : Controller
 	{
-		private readonly UserManager<PatientUser> _userManager;
+		private readonly IPatientRepository _patientRepository;
 		private readonly SignInManager<PatientUser> _signInManager;
 
-		public PatientController(UserManager<PatientUser> userManager, SignInManager<PatientUser> signInManager)
+		public PatientController(IPatientRepository patientRepository, SignInManager<PatientUser> signInManager)
 		{
-			_userManager = userManager;
+			_patientRepository = patientRepository;
 			_signInManager = signInManager;
 		}
 
 		public async Task<IActionResult> Index()
 		{
-			var patients = await Task.FromResult(_userManager.Users.ToList());
+			var patients = await _patientRepository.GetAllPatientsAsync();
 			return View(patients);
 		}
 
@@ -51,56 +51,39 @@ namespace MASM_2._0.Controllers
 				CreatedAt = DateTime.UtcNow
 			};
 
-			var result = await _userManager.CreateAsync(patientUser, model.Password);
-
-			if (result.Succeeded)
+			var result = await _patientRepository.CreatePatientAsync(patientUser, model.Password);
+			if (result)
 			{
-				await _userManager.AddToRoleAsync(patientUser, "Patient"); 
-				await _signInManager.SignInAsync(patientUser, isPersistent: false);
-				return RedirectToAction("Index", "Patient");
+				await _patientRepository.AddToRoleAsync(patientUser, "Patient");
+				ViewBag.RegistrationSuccess = true; // Flag for showing a message
+				ModelState.Clear(); // Clears the form fields
 			}
 
-			foreach (var error in result.Errors)
-			{
-				ModelState.AddModelError(string.Empty, error.Description);
-			}
-
+			ModelState.AddModelError("", "Registration failed.");
 			return View(model);
 		}
 
+		[HttpGet]
 		public IActionResult Login() => View();
 
+		[HttpPost]
 		public async Task<IActionResult> Login(PatientLoginViewModel model)
 		{
 			if (!ModelState.IsValid) return View(model);
 
-			var user = await _userManager.FindByEmailAsync(model.Email);
-			if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
+			var user = await _patientRepository.GetPatientByEmailAsync(model.Email);
+			if (user == null || !await _patientRepository.CheckPasswordAsync(user, model.Password))
 			{
 				ModelState.AddModelError("", "Invalid login attempt.");
 				return View(model);
 			}
 
-			// Get the user's roles (returns a list)
-			var roles = await _userManager.GetRolesAsync(user);
-			var role = roles.FirstOrDefault() ?? "Patient"; // Default to "Patient" if no role is assigned
+			await _signInManager.SignInAsync(user, isPersistent: false);
 
-			var claims = new List<Claim>
-			{
-				new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
-				new Claim(ClaimTypes.Role, role), // Store role correctly
-				new Claim("FirstName", user.FirstName ?? ""),
-				new Claim("LastName", user.LastName ?? "")
-			};
+			Console.WriteLine("User logged in successfully!");
 
-			var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-			var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-
-			await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
-
-			return RedirectToAction("Dashboard", "Index");
+			return RedirectToAction("Index", "Dashboard");
 		}
-
 
 		public async Task<IActionResult> Logout()
 		{
@@ -110,7 +93,7 @@ namespace MASM_2._0.Controllers
 
 		public async Task<IActionResult> Edit(string id)
 		{
-			var patient = await _userManager.FindByIdAsync(id);
+			var patient = await _patientRepository.GetPatientByIdAsync(id);
 			if (patient == null) return NotFound();
 
 			var model = new PatientEditViewModel
@@ -139,7 +122,7 @@ namespace MASM_2._0.Controllers
 		{
 			if (!ModelState.IsValid) return View(model);
 
-			var patient = await _userManager.FindByIdAsync(model.Id);
+			var patient = await _patientRepository.GetPatientByIdAsync(model.Id);
 			if (patient == null) return NotFound();
 
 			patient.Email = model.Email;
@@ -156,7 +139,7 @@ namespace MASM_2._0.Controllers
 			patient.EmailVerified = model.EmailVerified;
 			patient.Status = model.Status;
 
-			await _userManager.UpdateAsync(patient);
+			await _patientRepository.UpdatePatientAsync(patient);
 			return RedirectToAction("Index");
 		}
 	}

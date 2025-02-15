@@ -46,7 +46,12 @@
 		{
 			<p class="text-danger">@error.ErrorMessage</p>
 		}
-
+		@if (ViewBag.RegistrationSuccess != null && ViewBag.RegistrationSuccess == true)
+		{
+			<div class="alert alert-success">
+				Registration successful! You can now <a asp-controller="Patient" asp-action="Login">log in</a>.
+			</div>
+		}
 		<button type="submit" class="btn btn-primary py-2 px-3">Register</button>
 
 		<p class="pt-5">
