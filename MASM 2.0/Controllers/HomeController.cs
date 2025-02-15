@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using MASM_2._0.Models;
+using MASM.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MASM_2._0.Controllers

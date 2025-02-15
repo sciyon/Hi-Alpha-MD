@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace MASM_2._0.Models.Staff
+namespace MASM.Models
 {
 	public class StaffUser : Controller
 	{

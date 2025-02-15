@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace MASM_2._0.Models.Patient
+namespace MASM.Models
 {
 	public class PatientUser : IdentityUser
 	{

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace MASM_2._0.Models.Patient
+namespace MASM.Models
 {
 	public class PatientRegisterViewModel
 	{

@@ -1,11 +1,9 @@
-﻿using MASM_2._0.Models.Patient;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
+using MASM.Models;
 
 namespace MASM_2._0.Controllers
 {

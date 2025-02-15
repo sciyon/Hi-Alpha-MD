@@ -1,18 +1,30 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
-namespace MASM_2._0.Models.Patient
+namespace MASM.Models
 {
-	public class PatientEditViewModel
+	public class PatientRegisterViewModel
 	{
-		public string Id { get; set; }
-
 		[Required]
 		[EmailAddress]
+		[DisplayName("Email Address")]
 		public string Email { get; set; }
 
 		[Required]
 		[Phone]
+		[DisplayName("Mobile Number")]
 		public string MobileNumber { get; set; }
+
+		[Required]
+		[DataType(DataType.Password)]
+		[DisplayName("Password")]
+		public string Password { get; set; }
+
+		[Required]
+		[DataType(DataType.Password)]
+		[DisplayName("Confirm Password")]
+		[Compare("Password", ErrorMessage = "Passwords do not match.")]
+		public string ConfirmPassword { get; set; }
 
 		public string? FirstName { get; set; }
 		public string? LastName { get; set; }
@@ -23,7 +35,5 @@ namespace MASM_2._0.Models.Patient
 		public BloodType? BloodType { get; set; }
 		public string? EmergencyContact { get; set; }
 		public string? EmergencyContactNumber { get; set; }
-		public bool EmailVerified { get; set; }
-		public PatientStatus? Status { get; set; }
 	}
 }

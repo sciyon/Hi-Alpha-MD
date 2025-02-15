@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using MASM_2._0.Models.Patient;
+using MASM.Models;
 
-namespace MASM_2._0.Data
+namespace MASM.DataAccess.Data
 {
 	public class ApplicationDbContext : IdentityDbContext<PatientUser>
 	{

@@ -1,5 +1,5 @@
-using MASM_2._0.Data;
-using MASM_2._0.Models.Patient;
+using MASM.DataAccess.Data;
+using MASM.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
