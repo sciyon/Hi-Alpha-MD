@@ -9,21 +9,21 @@
 		</div>
 
 		<div class="mb-3">
-			<label asp-for="Email"></label>
-			<input asp-for="Email" type="email" class="form-control" required>
+			<label asp-for="Email" class="text-black"></label>
+			<input asp-for="Email" type="email" class="form-control w-50 border-primary text-black" required>
 			<span asp-validation-for="Email" class="text-danger"></span>
 		</div>
 
 		<div class="mb-3">
-			<label asp-for="MobileNumber"></label>
-			<input asp-for="MobileNumber" class="form-control" required>
+			<label asp-for="MobileNumber" class="text-black"></label>
+			<input asp-for="MobileNumber" class="form-control w-50 border-primary text-black" required>
 			<span asp-validation-for="MobileNumber" class="text-danger"></span>
 		</div>
 
-		<div class="mb-3">
-			<label asp-for="Password"></label>
+		<div class="mb-3 w-50 ">
+			<label asp-for="Password" class="text-black"></label>
 			<div class="input-group">
-				<input asp-for="Password" type="password" class="form-control" id="passwordField" required>
+				<input asp-for="Password" type="password" class="form-control border-primary text-black" id="passwordField" required>
 				<button type="button" class="btn btn-outline-primary" onclick="togglePassword('passwordField', 'passwordToggle')">
 					<i id="passwordToggle" class="bi bi-eye"></i>
 				</button>
@@ -31,10 +31,10 @@
 			<span asp-validation-for="Password" class="text-danger"></span>
 		</div>
 
-		<div class="mb-3">
-			<label asp-for="ConfirmPassword"></label>
+		<div class="mb-3 w-50 ">
+			<label asp-for="ConfirmPassword" class="text-black"></label>
 			<div class="input-group">
-				<input asp-for="ConfirmPassword" type="password" class="form-control" id="confirmPasswordField" required>
+				<input asp-for="ConfirmPassword" type="password" class="form-control border-primary text-black" id="confirmPasswordField" required>
 				<button type="button" class="btn btn-outline-primary" onclick="togglePassword('confirmPasswordField', 'confirmPasswordToggle')">
 					<i id="confirmPasswordToggle" class="bi bi-eye"></i>
 				</button>
@@ -54,7 +54,7 @@
 		}
 		<button type="submit" class="btn btn-primary py-2 px-3">Register</button>
 
-		<p class="pt-5">
+		<p class="pt-3">
 			Already registered?
 			<a asp-controller="Patient" asp-action="Login">Log in</a>
 		</p>

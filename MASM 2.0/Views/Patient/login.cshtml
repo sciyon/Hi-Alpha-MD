@@ -1,18 +1,21 @@
 ﻿@using MASM.Models;
 @model PatientLoginViewModel
 
-<form method="post">
-    <h1>Patient Login</h1>
+<form method="post" class="border p-3 mt-4">
+	<div class="row pb-2 mt-4">
+		<h1>Patient Login</h1>
+		<hr />
+	</div>
     <div class="mb-3">
-        <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control">
+        <label asp-for="Email" class="text-black"></label>
+        <input asp-for="Email" class="form-control border-primary text-black w-50">
         <span asp-validation-for="Email" class="text-danger"></span>
     </div>
 
 	<div class="mb-3">
-		<label asp-for="Password"></label>
-		<div class="input-group">
-			<input asp-for="Password" type="password" class="form-control border-primary" id="passwordField" required>
+		<label asp-for="Password" class="text-black"></label>
+		<div class="input-group  w-50">
+			<input asp-for="Password" type="password" class="form-control border-primary text-black" id="passwordField" required>
 			<button type="button" class="btn btn-outline-primary" onclick="togglePassword('passwordField', 'passwordToggle')">
 				<i id="passwordToggle" class="bi bi-eye"></i>
 			</button>
@@ -29,11 +32,11 @@
 		</div>
 	}
     <button type="submit" class="btn btn-primary">Login</button>
-	<p class="pt-5">
+	<p class="pt-4 text-black">
 		No account?
 		<a asp-controller="Patient" asp-action="Register">Register now</a>
 	</p>
-	<p class="pt-5">
+	<p class="">
 		<a asp-controller="Patient" asp-action="Register">Staff Login</a>
 	</p>
 </form>
