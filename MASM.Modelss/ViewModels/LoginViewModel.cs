@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MASM.Models
+namespace MASM.Models.ViewModels
 {
-	public class PatientLoginViewModel
+	public class LoginViewModel
 	{
 		[Required, EmailAddress]
 		public string Email { get; set; }

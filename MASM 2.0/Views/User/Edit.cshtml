@@ -1,5 +1,5 @@
-﻿@using MASM.Models;
-@model PatientEditViewModel
+﻿@using MASM.Models.ViewModels;
+@model EditViewModel
 
 <form method="post">
 	<div class="border p-3 mt-4">
@@ -80,7 +80,7 @@
 
 		<div class="mb-3">
 			<label asp-for="Status"></label>
-			<select asp-for="Status" asp-items="Html.GetEnumSelectList<PatientStatus>()" class="form-control">
+			<select asp-for="Status" asp-items="Html.GetEnumSelectList<UserStatus>()" class="form-control">
 				<option value="">Select Status</option>
 			</select>
 		</div>

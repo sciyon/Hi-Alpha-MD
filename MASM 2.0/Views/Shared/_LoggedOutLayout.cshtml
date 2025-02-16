@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"]Hi-Alpha MD</title>
+    <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/MASM_2._0.styles.css" asp-append-version="true" />
@@ -35,17 +35,17 @@
                             <a class="nav-link text-white" asp-controller="Home" asp-action="Privacy">Contact</a>
                         </li>
                         <li class="nav-item px-4">
-                            <a class="nav-link text-white" asp-controller="Patient" asp-action="Index">Patients</a>
+                            <a class="nav-link text-white" asp-controller="User" asp-action="Index">Patients</a>
                         </li>
                     </ul>
                 </div>
                 <button class="custom-button me-2">
-                    <a class="nav-link fw-bold fs-5" asp-controller="Patient" asp-action="Register">
+                    <a class="nav-link fw-bold fs-5" asp-controller="User" asp-action="Register">
                         <i class="bi bi-card-checklist"></i> Register
                     </a>
                 </button>
                 <button class="custom-button">
-                    <a class="nav-link fw-bold fs-5" asp-controller="Patient" asp-action="Login">
+                    <a class="nav-link fw-bold fs-5" asp-controller="User" asp-action="Login">
                         <i class="bi bi-box-arrow-in-left"></i> Login
                     </a>
                 </button>

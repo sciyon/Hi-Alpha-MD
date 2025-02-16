@@ -1,5 +1,5 @@
 ﻿@using MASM.Models;
-@model List<PatientUser>
+@model List<User>
 
 <h1>Patients List</h1>
 
@@ -13,14 +13,14 @@
 		</tr>
 	</thead>
 	<tbody>
-		@foreach (var patient in Model)
+		@foreach (var User in Model)
 		{
 			<tr>
-				<td>@patient.Email</td>
-				<td>@patient.MobileNumber</td>
-				<td>@patient.Status</td>
+				<td>@User.Email</td>
+				<td>@User.MobileNumber</td>
+				<td>@User.Status</td>
 				<td>
-					<a asp-action="Edit" asp-route-id="@patient.Id" class="btn btn-primary">Edit</a>
+					<a asp-action="Edit" asp-route-id="@User.Id" class="btn btn-primary">Edit</a>
 				</td>
 			</tr>
 		} 

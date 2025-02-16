@@ -21,4 +21,8 @@
     <ProjectReference Include="..\MASM.Utilities\MASM.Utilities.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Appointments\" />
+  </ItemGroup>
+
 </Project>

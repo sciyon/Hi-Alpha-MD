@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace MASM.Models
+namespace MASM.Models.ViewModels
 {
-	public class PatientRegisterViewModel
+	public class RegisterViewModel
 	{
 		[Required]
 		[EmailAddress]
@@ -35,5 +35,9 @@ namespace MASM.Models
 		public BloodType? BloodType { get; set; }
 		public string? EmergencyContact { get; set; }
 		public string? EmergencyContactNumber { get; set; }
+
+		[Required]
+		[DisplayName("Role")]
+		public Role Role { get; set; } = Role.Patient; // Default to Patient
 	}
 }

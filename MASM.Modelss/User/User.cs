@@ -3,40 +3,33 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MASM.Models
 {
-	public class PatientUser : IdentityUser
+	public class User : IdentityUser
 	{
-		// Optional fields
 		public string? FirstName { get; set; }
 		public string? LastName { get; set; }
 		public string? Address { get; set; }
 		public DateTime? BirthDate { get; set; }
 		public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
 		public Sex? Sex { get; set; }
-		public string MobileNumber { get; set; }
-		public PatientStatus? Status { get; set; } = PatientStatus.Active;
 		public CivilStatus? CivilStatus { get; set; }
 		public BloodType? BloodType { get; set; }
-		public bool EmailVerified { get; set; } = false;
-
-
+		public string MobileNumber { get; set; }
 		public string? EmergencyContact { get; set; }
 		public string? EmergencyContactNumber { get; set; }
+		public bool EmailVerified { get; set; } = false;
+
+		public Role Role { get; set; } = Role.Patient; // Default to Patient
+		public UserStatus Status { get; set; } = UserStatus.Active;
+
+		// Many-to-Many Relationship
+		public List<UserClinic> UserClinics { get; set; } = new();
 	}
 
-	// Enum for Sex
 	public enum Sex
 	{
 		Male,
 		Female,
 		Other
-	}
-
-	public enum PatientStatus
-	{
-		Active,
-		Deleted,
-		Blocked
 	}
 
 	public enum CivilStatus
@@ -57,5 +50,20 @@ namespace MASM.Models
 		[Display(Name = "O-")] O_Negative,
 		[Display(Name = "AB+")] AB_Positive,
 		[Display(Name = "AB-")] AB_Negative
+	}
+
+	public enum Role
+	{
+		Patient,
+		Doctor,
+		Assistant,
+		Admin
+	}
+
+	public enum UserStatus
+	{
+		Active,
+		Deleted,
+		Blocked
 	}
 }

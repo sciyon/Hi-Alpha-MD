@@ -7,7 +7,7 @@
     {
         "doctor" => "/img/doctorIcon.png",
         "assistant" => "/img/assistantIcon.png",
-        _ => "/img/patientIcon.png"
+        "patient" => "/img/patientIcon.png"
     };
 
     var formattedName = $"{lastName} {firstName[0]}.";
@@ -83,7 +83,7 @@
                         <li class="nav-item pb-2"><a class="nav-link bg-primary rounded-3 text-black-50 px-2" href="#"><i class="bi bi-person-bounding-box mx-2"></i>Profile</a></li>
 
                         <li class="nav-item pb-2">
-                            <form asp-controller="Patient" asp-action="Logout" method="post">
+                            <form asp-controller="User" asp-action="Logout" method="post">
                                 <button type="submit" class="nav-link bg-primary rounded-3 text-black-50 w-100 text-start px-2"><i class="bi bi-box-arrow-left mx-2"></i>Logout</button>
                             </form>
                         </li>
