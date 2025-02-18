@@ -19,7 +19,20 @@ namespace MASM.DataAccess.Data
 		{
 			base.OnModelCreating(modelBuilder);
 
-			// Define Many-to-Many Relationship between Users & Clinics
+			// Unique Constraints for Clinic
+			modelBuilder.Entity<Clinic>()
+				.HasIndex(c => c.Telephone)
+				.IsUnique();
+
+			modelBuilder.Entity<Clinic>()
+				.HasIndex(c => c.Phone)
+				.IsUnique();
+
+			modelBuilder.Entity<Clinic>()
+				.HasIndex(c => c.Email)
+				.IsUnique();
+
+			// UserClinic Relationship (Many-to-Many)
 			modelBuilder.Entity<UserClinic>()
 				.HasKey(uc => new { uc.UserId, uc.ClinicId });
 

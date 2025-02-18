@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace MASM.Models.ViewModels
 {
@@ -17,6 +18,7 @@ namespace MASM.Models.ViewModels
 		public string EmergencyContact { get; set; }
 		public string EmergencyContactNumber { get; set; }
 		public bool EmailVerified { get; set; }
-		public UserStatus Status { get; set; } // Ensure it matches the fix above
+		public UserStatus Status { get; set; } 
+		public Role Role { get; set; } 
 	}
 }

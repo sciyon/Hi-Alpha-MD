@@ -1,28 +1,32 @@
 ﻿@using MASM.Models;
 @model List<User>
 
-<h1>Patients List</h1>
+<div class="p-4 rounded-1">
+	<h1>User Master List</h1>
 
-<table class="table">
-	<thead>
-		<tr>
-			<th>Email</th>
-			<th>Mobile Number</th>
-			<th>Status</th>
-			<th>Actions</th>
-		</tr>
-	</thead>
-	<tbody>
-		@foreach (var User in Model)
-		{
+	<table class="table">
+		<thead>
 			<tr>
-				<td>@User.Email</td>
-				<td>@User.MobileNumber</td>
-				<td>@User.Status</td>
-				<td>
-					<a asp-action="Edit" asp-route-id="@User.Id" class="btn btn-primary">Edit</a>
-				</td>
+				<th>Email</th>
+				<th>Mobile Number</th>
+				<th>Status</th>
+				<th>Role</th>
+				<th>Actions</th>
 			</tr>
-		} 
-	</tbody>
-</table>
+		</thead>
+		<tbody>
+			@foreach (var User in Model)
+			{
+				<tr>
+					<td>@User.Email</td>
+					<td>@User.MobileNumber</td>
+					<td>@User.Status</td>
+					<td>@User.Role</td>
+					<td>
+						<a asp-action="Edit" asp-route-id="@User.Id" class="btn btn-primary">Edit</a>
+					</td>
+				</tr>
+			} 
+		</tbody>
+	</table>
+</div>

@@ -6,10 +6,9 @@ namespace MASM.Models
 {
 	public class UserClinic
 	{
-		public string UserId { get; set; } = null!; // FK to User
-		public int ClinicId { get; set; } // FK to Clinic
+		public string UserId { get; set; } = null!;
+		public int ClinicId { get; set; } 
 
-		// Navigation Properties
 		public User User { get; set; } = null!;
 		public MASM.Models.Clinic.Clinic Clinic { get; set; } = null!;
 	}

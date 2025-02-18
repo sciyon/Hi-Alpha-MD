@@ -1,8 +1,8 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using MASM.DataAccess.Data;
 using MASM.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +27,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IClinicRepository, ClinicRepository>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
 	.AddCookie(options =>
@@ -37,11 +38,34 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 var app = builder.Build();
 
+// Ensure roles exist in the database
+using (var scope = app.Services.CreateScope())
+{
+	var services = scope.ServiceProvider;
+	var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+	await SeedRoles(roleManager);
+}
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
 	name: "default",
 	pattern: "{controller=Home}/{action=Index}/{id?}");
+app.UseStaticFiles();
 
 app.Run();
+
+// Role Seeding Method
+async Task SeedRoles(RoleManager<IdentityRole> roleManager)
+{
+	string[] roles = { "Patient", "Doctor", "Assistant", "Admin" };
+
+	foreach (var role in roles)
+	{
+		if (!await roleManager.RoleExistsAsync(role))
+		{
+			await roleManager.CreateAsync(new IdentityRole(role));
+		}
+	}
+}

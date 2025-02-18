@@ -27,7 +27,6 @@
 
   <ItemGroup>
     <Folder Include="Views\AdminDashboard\" />
-    <Folder Include="Views\DoctorDashboard\" />
     <Folder Include="Views\NewFolder\" />
   </ItemGroup>
 

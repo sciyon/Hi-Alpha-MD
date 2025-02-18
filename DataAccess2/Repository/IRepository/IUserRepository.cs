@@ -1,6 +1,4 @@
 ﻿using MASM.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 public interface IUserRepository
 {
