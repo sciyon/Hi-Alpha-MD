@@ -12,9 +12,12 @@ public interface IUserClinicRepository
 	Task<List<Clinic>> GetClinicsByUserIdAsync(string userId);
 	Task<List<User>> GetUsersByClinicIdAsync(int clinicId);
 
-	//Get all UserClinics
+	// Get all UserClinics
 	Task<List<UserClinic>> GetAllUserClinicsAsync();
 
-	//Get UserClinic using user and clinic id
+	// Get UserClinic using user and clinic id
 	Task<UserClinic> GetUserClinicAsync(string userId, int clinicId);
+
+	// NEW: Get staff by clinic ID and optional role
+	Task<List<User>> GetStaff(int clinicId, string role = null);
 }

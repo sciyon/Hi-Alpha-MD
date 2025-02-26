@@ -61,9 +61,11 @@
         <nav id="sidebarMenu" class="col-lg-2 col-md-3 d-flex flex-column bg-light p-3" style="height: 100vh;">
             <div class="position-sticky">
                 <ul class="nav flex-column">
-                    <li class="nav-item pb-2"><a class="nav-link bg-primary rounded-3 text-white px-2" href="#"><i class="bi bi-house mx-2"></i>Dashboard</a></li>
-                    <li class="nav-item pb-2"><a class="nav-link bg-primary rounded-3 text-black-50 px-2" href="#"><i class="bi bi-journals mx-2"></i>Appointments</a></li>
-                    <li class="nav-item pb-2"><a class="nav-link bg-primary rounded-3 text-black-50 px-2" href="#"><i class="bi bi-calendar mx-2"></i>Schedule</a></li>
+                    <li class="nav-item pb-2"><a class="nav-link bg-primary rounded-3 text-black-50 fw-semibold fs-5 px-2" href="#"><i class="bi bi-house mx-2"></i>Dashboard</a></li>
+                    <li class="nav-item pb-2">
+                        <a class="nav-link bg-primary rounded-3 text-black-50 fw-semibold fs-5 px-2" asp-controller="Appointment" asp-action="Index"><i class="bi bi-journals mx-2"></i>Appointments</a>
+                    </li>
+                    <li class="nav-item pb-2"><a class="nav-link bg-primary rounded-3 text-black-50 fw-semibold fs-5 px-2" href="#"><i class="bi bi-calendar mx-2"></i>Calendar</a></li>
                     <!--<li class="nav-item pb-2"><a class="nav-link bg-primary rounded-3 text-black-50 px-2" href="#"><i class="bi bi-clipboard-data-fill mx-2"></i>Diagnoses</a></li>
                     <li class="nav-item pb-2"><a class="nav-link bg-primary rounded-3 text-black-50 px-2" href="#"><i class="bi bi-receipt mx-2"></i>Billings</a></li>-->
 
@@ -74,7 +76,7 @@
                     }
                     @if (userRole.ToLower() == "doctor")
                     {
-                        <li class="nav-item pb-2"><a class="nav-link bg-primary rounded-3 text-black-50 px-2" href="#"><i class="bi bi-gear-wide-connected mx-2"></i>Clinic Settings</a></li>
+                        <li class="nav-item pb-2"><a class="nav-link bg-primary rounded-3 text-black-50 fw-semibold fs-5 px-2" href="#"><i class="bi bi-gear-wide-connected mx-2"></i>Clinic Settings</a></li>
                     }
 
                     @if (userRole.ToLower() == "doctor" || userRole.ToLower() == "admin")
@@ -89,20 +91,22 @@
                     @if (userRole.ToLower() == "admin")
                     {
                         <li class="nav-item pb-2">
-                            <a class="nav-link bg-primary rounded-3 text-black-50 px-2" asp-controller="User" asp-action="Index"><i class="bi bi-person-fill mx-2"></i>Users</a>
+                            <a class="nav-link bg-primary rounded-3 text-black-50 fw-semibold fs-5 px-2" asp-controller="User" asp-action="Index"><i class="bi bi-person-fill mx-2"></i>Users</a>
                         </li>
                         <li class="nav-item pb-2">
-                            <a class="nav-link bg-primary rounded-3 text-black-50 px-2" asp-controller="UserClinic" asp-action="Index"><i class="bi bi-person-fill mx-2"></i>Staff Assignment</a>
+                            <a class="nav-link bg-primary rounded-3 text-black-50 fw-semibold fs-5 px-2" asp-controller="UserClinic" asp-action="Index"><i class="bi bi-person-fill mx-2"></i>Staff Assignment</a>
                         </li>
 
-                        <li class="nav-item pb-2"><a class="nav-link bg-primary rounded-3 text-black-50 px-2" asp-controller="Clinic" asp-action="Index"><i class="bi bi-gear-wide-connected mx-2"></i>Clinics</a></li>
+                        <li class="nav-item pb-2">
+                            <a class="nav-link bg-primary rounded-3 text-black-50 fw-semibold fs-5 px-2" asp-controller="Clinic" asp-action="Index"><i class="bi bi-gear-wide-connected mx-2"></i>Clinics</a>
+                        </li>
                     }
 
                     <!-- <li class="nav-item pb-2"><a class="nav-link bg-primary rounded-3 text-black-50 px-2" href="#"><i class="bi bi-person-bounding-box mx-2"></i>Profile</a></li>-->
 
-                    <li class="nav-item pb-2">
+                    <li class="nav-item pb-2 w-100">
                         <form asp-controller="User" asp-action="Logout" method="post">
-                            <button type="submit" class="nav-link bg-primary rounded-3 text-black-50 w-100 text-start px-2"><i class="bi bi-box-arrow-left mx-2"></i>Logout</button>
+                            <button type="submit" onclick="submit" class="nav-link bg-primary rounded-3 text-black-50 fw-semibold fs-5 text-start px-2 w-100"><i class="bi bi-box-arrow-left mx-2"></i>Logout</button>
                         </form>
                     </li>
                 </ul>

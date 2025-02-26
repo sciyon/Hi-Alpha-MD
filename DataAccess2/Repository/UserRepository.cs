@@ -62,4 +62,29 @@ public class UserRepository : IUserRepository
 			.Where(u => u.Email.Contains(searchTerm) && _userManager.GetRolesAsync(u).Result.Contains(role))
 			.ToListAsync();
 	}
+
+	// NEW: Get all patients
+	public async Task<List<User>> GetPatients()
+	{
+		//Get all users
+		var users = _userManager.Users.ToList();
+
+		//Creates a patients list
+		List<User> patients = new List<User>();
+
+		//For each user
+		foreach (var user in users)
+		{
+			//check if the user has a role "Patient"
+			var roles = await _userManager.GetRolesAsync(user);
+
+			//If it does, add the user to the patients list.
+			if (roles.Contains("Patient"))
+			{
+				patients.Add(user);
+			}
+		}
+		//Return that patients list
+		return patients;
+	}
 }

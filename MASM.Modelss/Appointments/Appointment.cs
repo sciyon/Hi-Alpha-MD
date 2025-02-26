@@ -20,7 +20,7 @@ namespace MASM.Models
 		public User Patient { get; set; } // Navigation property
 
 		// Foreign key to the confirmee (User with Role.Assistant or Role.Doctor)
-		public string ConfirmeeId { get; set; }
+		public string? ConfirmeeId { get; set; }
 		public User Confirmee { get; set; } // Navigation property
 
 		// Foreign key to the clinic
@@ -54,7 +54,7 @@ namespace MASM.Models
 		public User CreatedBy { get; set; } // Navigation property
 
 		public DateTime? ModifiedOn { get; set; }
-		public string ModifiedById { get; set; } // Foreign key to the user who modified the appointment
+		public string? ModifiedById { get; set; } // Foreign key to the user who modified the appointment
 		public User ModifiedBy { get; set; } // Navigation property
 	}
 

@@ -1,0 +1,159 @@
+﻿@model IEnumerable<MASM.Models.Appointment>
+
+@{
+    ViewData["Title"] = "Appointments";
+
+    // Default values for dropdowns
+    var clinicId = ViewBag.ClinicId != null ? (int)ViewBag.ClinicId : 0;
+    var status = ViewBag.Status != null ? (AppointmentStatus)ViewBag.Status : (AppointmentStatus?)null;
+    var dateFilter = ViewBag.DateFilter ?? "future"; // Default to "future"
+    var sortBy = ViewBag.SortBy ?? "ascending";      // Default to "ascending"
+    var clinics = ViewBag.Clinics as List<MASM.Models.Clinic.Clinic>; // Ensure clinics is available
+}
+
+<div class="p-4 rounded-1 bg-white m-3">
+    <form id="filterForm" asp-action="Index" method="get">
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <label for="clinicId" class="form-label">Select Clinic:</label>
+                <select id="clinicId" name="clinicId" class="form-select" onchange="submitForm()">
+                    <option value="0">All Clinics</option>
+                    @if (clinics != null)
+                    {
+                        @foreach (var clinic in clinics)
+                        {
+                            <option value="@clinic.Id" selected="@(clinic.Id == clinicId)">@clinic.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label for="status" class="form-label">Appointment Status:</label>
+                <select id="status" name="status" class="form-select" onchange="submitForm()">
+                    <option value="">All Statuses</option>
+                    <option value="@AppointmentStatus.Pending" selected="@(status == AppointmentStatus.Pending)">Pending</option>
+                    <option value="@AppointmentStatus.Confirmed" selected="@(status == AppointmentStatus.Confirmed)">Confirmed</option>
+                    <option value="@AppointmentStatus.Cancelled" selected="@(status == AppointmentStatus.Cancelled)">Cancelled</option>
+                    <option value="@AppointmentStatus.Denied" selected="@(status == AppointmentStatus.Denied)">Denied</option>
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label for="dateFilter" class="form-label">Date Filter:</label>
+                <select id="dateFilter" name="dateFilter" class="form-select" onchange="submitForm()">
+                    <option value="past" selected="@(dateFilter == "past")">Past</option>
+                    <option value="future" selected="@(dateFilter == "future")">Future</option>
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label for="sortBy" class="form-label">Sort By Date:</label>
+                <select id="sortBy" name="sortBy" class="form-select" onchange="submitForm()">
+                    <option value="ascending" selected="@(sortBy == "ascending")">Ascending</option>
+                    <option value="descending" selected="@(sortBy == "descending")">Descending</option>
+                </select>
+            </div>
+        </div>
+    </form>
+
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.AppointmentDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ReasonForVisit)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Status)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Clinic.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Patient.UserName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Doctor.UserName)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AppointmentDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ReasonForVisit)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Clinic.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Patient.UserName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Doctor.UserName)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @* Pagination *@
+    @{
+        var range = ViewBag.Range;
+        var startDate = ViewBag.StartDate;
+        var page = ViewBag.Page;
+        var pageSize = ViewBag.PageSize;
+        var totalCount = ViewBag.TotalCount;
+
+        var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+    }
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            <li class="page-item @(page == 1 ? "disabled" : "")">
+                <a class="page-link" asp-action="Index" asp-route-clinicId="@clinicId" asp-route-range="@range" asp-route-status="@status" asp-route-startDate="@startDate" asp-route-dateFilter="@dateFilter" asp-route-sortBy="@sortBy" asp-route-page="@(page - 1)" asp-route-pageSize="@pageSize" aria-label="Previous">
+                    <span aria-hidden="true">«</span>
+                </a>
+            </li>
+
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                <li class="page-item @(i == page ? "active" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-clinicId="@clinicId" asp-route-range="@range" asp-route-status="@status" asp-route-startDate="@startDate" asp-route-dateFilter="@dateFilter" asp-route-sortBy="@sortBy" asp-route-page="@i" asp-route-pageSize="@pageSize">@i</a>
+                </li>
+            }
+
+            <li class="page-item @(page == totalPages ? "disabled" : "")">
+                <a class="page-link" asp-action="Index" asp-route-clinicId="@clinicId" asp-route-range="@range" asp-route-status="@status" asp-route-startDate="@startDate" asp-route-dateFilter="@dateFilter" asp-route-sortBy="@sortBy" asp-route-page="@(page + 1)" asp-route-pageSize="@pageSize" aria-label="Next">
+                    <span aria-hidden="true">»</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+@section Scripts {
+    <script>
+        function submitForm() {
+            document.getElementById("filterForm").submit();
+        }
+    </script>
+}

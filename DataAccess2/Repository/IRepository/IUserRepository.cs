@@ -12,4 +12,7 @@ public interface IUserRepository
 	Task<List<User>> GetAllUsersAsync();
 	Task<List<User>> SearchUsersByNameAndRoleAsync(string searchTerm, string role);
 	Task<List<User>> SearchUsersByEmailAndRoleAsync(string searchTerm, string role);
+
+	// NEW: Get all patients
+	Task<List<User>> GetPatients();
 }

@@ -26,33 +26,79 @@ namespace MASM.DataAccess.Repositories
 				.FirstOrDefaultAsync(a => a.Id == id);
 		}
 
-		public async Task<IEnumerable<Appointment>> GetAllAsync(int clinicId, string range = "monthly", AppointmentStatus? status = null)
+		public async Task<(IEnumerable<Appointment> Appointments, int TotalCount)> GetAllAsync(
+			int clinicId,
+			string range = "monthly",
+			AppointmentStatus? status = null,
+			DateTime? startDate = null,
+			int page = 1,
+			int pageSize = 10,
+			string dateFilter = "future",
+			string sortBy = "ascending")
 		{
-			var query = _context.Appointments
+			IQueryable<Appointment> query = _context.Appointments
 				.Include(a => a.Doctor)
 				.Include(a => a.Patient)
-				.Include(a => a.Clinic)
-				.Where(a => a.ClinicId == clinicId);
+				.Include(a => a.Clinic);
+
+			if (clinicId != 0)
+			{
+				query = query.Where(a => a.ClinicId == clinicId);
+			}
 
 			if (status.HasValue)
 			{
 				query = query.Where(a => a.Status == status.Value);
 			}
 
+			DateTime today = DateTime.UtcNow.Date;
+
+			if (dateFilter == "past")
+			{
+				query = query.Where(a => a.AppointmentDate < today);
+			}
+			else // "future" or default
+			{
+				query = query.Where(a => a.AppointmentDate >= today);
+			}
+
+			// Sorting
+			if (sortBy == "ascending")
+			{
+				query = query.OrderBy(a => a.AppointmentDate);
+			}
+			else // "descending"
+			{
+				query = query.OrderByDescending(a => a.AppointmentDate);
+			}
+
+			DateTime rangeStart, rangeEnd;
+
 			if (range == "weekly")
 			{
-				var startOfWeek = DateTime.UtcNow.Date.AddDays(-(int)DateTime.UtcNow.DayOfWeek);
-				var endOfWeek = startOfWeek.AddDays(7);
-				query = query.Where(a => a.AppointmentDate >= startOfWeek && a.AppointmentDate <= endOfWeek);
+				// Calculate the start and end of the week
+				rangeStart = startDate?.Date ?? DateTime.UtcNow.Date.AddDays(-(int)DateTime.UtcNow.DayOfWeek);
+				rangeEnd = rangeStart.AddDays(7);
 			}
 			else // Default to monthly
 			{
-				var startOfMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
-				var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
-				query = query.Where(a => a.AppointmentDate >= startOfMonth && a.AppointmentDate <= endOfMonth);
+				// Calculate the start and end of the month
+				rangeStart = startDate?.Date ?? new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
+				rangeEnd = rangeStart.AddMonths(1).AddDays(-1);
 			}
 
-			return await query.ToListAsync();
+			query = query.Where(a => a.AppointmentDate >= rangeStart && a.AppointmentDate <= rangeEnd);
+
+			// Get the total count for pagination
+			var totalCount = await query.CountAsync();
+
+			// Apply pagination
+			var appointments = await query
+				.Skip((page - 1) * pageSize)
+				.Take(pageSize)
+				.ToListAsync();
+
+			return (appointments, totalCount);
 		}
 
 		public async Task CreateAsync(Appointment appointment)
