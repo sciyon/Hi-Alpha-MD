@@ -1,0 +1,16 @@
+﻿@model List<MASM.Models.Clinic.Clinic>
+@if (Model != null && Model.Any())
+{
+    <ul>
+        @foreach (var clinic in Model)
+        {
+            <li class="clinicResultItem" data-clinic-id="@clinic.Id">
+                @clinic.Name (@clinic.Email)
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>No clinics found.</p>
+}

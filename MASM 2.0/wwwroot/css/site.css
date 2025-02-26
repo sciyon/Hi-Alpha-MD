@@ -24,3 +24,7 @@ body {
 .nav-link.bg-primary:hover {
     background-color: #4f8274 !important; /* Darker shade of primary */
 }
+
+.table tbody tr.selected {
+    background-color: #cce5ff; /* Change to the color you prefer */
+}

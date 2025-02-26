@@ -2,6 +2,10 @@
 using MASM.Models;
 using MASM.Models.Clinic;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
 public class UserClinicRepository : IUserClinicRepository
 {
 	private readonly ApplicationDbContext _context;
@@ -79,4 +83,23 @@ public class UserClinicRepository : IUserClinicRepository
 			.Select(uc => uc.User)
 			.ToListAsync();
 	}
+
+	//Get All UserClinics
+	public async Task<List<UserClinic>> GetAllUserClinicsAsync()
+	{
+		return await _context.UserClinics
+			.Include(uc => uc.Clinic)  // Eagerly load the Clinic
+			.Include(uc => uc.User)    // Eagerly load the User
+			.ToListAsync();
+	}
+
+	//Get UserClinic
+	public async Task<UserClinic> GetUserClinicAsync(string userId, int clinicId)
+	{
+		return await _context.UserClinics
+			.Include(uc => uc.Clinic)
+			.Include(uc => uc.User)
+			.FirstOrDefaultAsync(uc => uc.UserId == userId && uc.ClinicId == clinicId);
+	}
+
 }

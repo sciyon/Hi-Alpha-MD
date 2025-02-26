@@ -14,6 +14,7 @@ namespace MASM.DataAccess.Data
 
 		public DbSet<Clinic> Clinics { get; set; }
 		public DbSet<UserClinic> UserClinics { get; set; }
+		public DbSet<Appointment> Appointments { get; set; } // Add Appointment table
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -45,6 +46,43 @@ namespace MASM.DataAccess.Data
 				.HasOne(uc => uc.Clinic)
 				.WithMany(c => c.UserClinics)
 				.HasForeignKey(uc => uc.ClinicId);
+
+			// Appointment Relationships
+			modelBuilder.Entity<Appointment>()
+				.HasOne(a => a.Doctor)
+				.WithMany()
+				.HasForeignKey(a => a.DoctorId)
+				.OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
+
+			modelBuilder.Entity<Appointment>()
+				.HasOne(a => a.Patient)
+				.WithMany()
+				.HasForeignKey(a => a.PatientId)
+				.OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
+
+			modelBuilder.Entity<Appointment>()
+				.HasOne(a => a.Confirmee)
+				.WithMany()
+				.HasForeignKey(a => a.ConfirmeeId)
+				.OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
+
+			modelBuilder.Entity<Appointment>()
+				.HasOne(a => a.Clinic)
+				.WithMany()
+				.HasForeignKey(a => a.ClinicId)
+				.OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
+
+			modelBuilder.Entity<Appointment>()
+				.HasOne(a => a.CreatedBy)
+				.WithMany()
+				.HasForeignKey(a => a.CreatedById)
+				.OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
+
+			modelBuilder.Entity<Appointment>()
+				.HasOne(a => a.ModifiedBy)
+				.WithMany()
+				.HasForeignKey(a => a.ModifiedById)
+				.OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
 		}
 	}
 }

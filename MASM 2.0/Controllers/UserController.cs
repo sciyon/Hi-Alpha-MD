@@ -111,12 +111,15 @@ namespace MASM.Controllers
 			user.Role = model.Role;
 			await _userRepository.UpdateUserAsync(user);
 
-			// Refresh authentication session to apply new role
-			await _signInManager.RefreshSignInAsync(user);
+			// Refresh authentication session only if the edited user is the currently logged-in user
+			var currentUserId = _userManager.GetUserId(User); // Get the ID of the currently logged-in user
+			if (user.Id == currentUserId)
+			{
+				await _signInManager.RefreshSignInAsync(user);
+			}
 
 			return RedirectToAction("Index");
 		}
-
 
 
 
@@ -185,7 +188,7 @@ namespace MASM.Controllers
 		public async Task<IActionResult> Logout()
 		{
 			await _signInManager.SignOutAsync();
-			return RedirectToAction("Index", "User");
+			return RedirectToAction("Index", "Home");
 		}
 	}
 }

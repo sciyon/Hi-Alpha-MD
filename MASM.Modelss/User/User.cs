@@ -22,7 +22,7 @@ namespace MASM.Models
 		public UserStatus Status { get; set; } = UserStatus.Active;
 
 		// Many-to-Many Relationship
-		public List<UserClinic> UserClinics { get; set; } = new();
+		public List<UserClinic> UserClinics { get; set; } = new(); // Navigation property
 	}
 
 	public enum Sex

@@ -1,5 +1,146 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model MASM.Models.UserClinic
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<MASM.Models.User> UserManager
+
 @{
+    ViewData["Title"] = "Create User Clinic";
+}
+
+<div class="p-4 rounded-1 bg-white m-3">
+    @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+    {
+        <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+    }
+
+    <form asp-action="Create" method="post">
+        <div class="row">
+            <div class="col-md-6">
+                <h3>User Selection</h3>
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in (List<MASM.Models.User>)ViewBag.StaffList)
+                        {
+                            <tr>
+                                <td>@user.FirstName @user.LastName</td>
+                                <td>@user.Email</td>
+                                <td>
+                                    @{
+                                        var roles = await UserManager.GetRolesAsync(user);
+                                        string roleString = string.Join(", ", roles);
+                                    }
+                                    @roleString
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-primary select-user" data-user-id="@user.Id" data-user-firstname="@user.FirstName" data-user-lastname="@user.LastName" data-user-roles="@roleString">Select</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-md-6">
+                <h3>Clinic Selection</h3>
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var clinic in (List<MASM.Models.Clinic.Clinic>)ViewBag.ClinicList)
+                        {
+                            <tr>
+                                <td>@clinic.Name</td>
+                                <td>@clinic.Email</td>
+                                <td>@clinic.Status</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-primary select-clinic" data-clinic-id="@clinic.Id" data-clinic-name="@clinic.Name">Select Clinic</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <p id="selectedText">You are adding <b></b> as <b></b> to clinic <b></b></p>
+            </div>
+        </div>
+
+        <div class="form-group mt-3">
+            <input type="hidden" id="selectedUserId" name="selectedUserId" />
+            <input type="hidden" id="selectedClinicId" name="selectedClinicId" />
+            <button type="submit" class="btn btn-primary">Assign Staff to Clinic</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Store User Details
+            var selectedUserId = "";
+            var selectedUserFirstName = "";
+            var selectedUserLastName = "";
+            var selectedUserRoles = "";
+
+            //Store Clinic Details
+            var selectedClinicId = "";
+            var selectedClinicName = "";
+
+            // User Selection
+            $(".select-user").click(function () {
+                //First: Deselect all rows of user list
+                $('.table tbody tr').removeClass('selected')
+
+                //Select the item's row
+                $(this).closest('tr').addClass('selected');
+
+                selectedUserId = $(this).data('user-id');
+                selectedUserFirstName = $(this).data('user-firstname');
+                selectedUserLastName = $(this).data('user-lastname');
+                selectedUserRoles = $(this).data('user-roles');
+                $("#selectedUserId").val(selectedUserId);
+                updateSelectedText();
+            });
+
+            // Clinic Selection
+            $(".select-clinic").click(function () {
+                //First: Deselect all rows of user list
+                $('.table tbody tr').removeClass('selected')
+
+                //Select the item's row
+                $(this).closest('tr').addClass('selected');
+
+                selectedClinicId = $(this).data('clinic-id');
+                selectedClinicName = $(this).data('clinic-name');
+                $("#selectedClinicId").val(selectedClinicId);
+                updateSelectedText();
+            });
+
+            function updateSelectedText() {
+                if (selectedUserFirstName && selectedClinicName) {
+                    $("#selectedText").html("You are adding <b>" + selectedUserFirstName + " " + selectedUserLastName + "</b> as <b>" + selectedUserRoles + "</b> to clinic <b>" + selectedClinicName + "</b>");
+                } else {
+                    $("#selectedText").text("You need to select a User and a Clinic");
+                }
+            }
+
+        });
+    </script>
 }

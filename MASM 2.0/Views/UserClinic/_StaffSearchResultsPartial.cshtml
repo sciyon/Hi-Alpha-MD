@@ -1,0 +1,16 @@
+﻿@model List<MASM.Models.User>
+@if (Model != null && Model.Any())
+{
+    <ul>
+        @foreach (var user in Model)
+        {
+            <li class="staffResultItem" data-user-id="@user.Id">
+                @user.FirstName @user.LastName (@user.Email)
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>No staff found.</p>
+}

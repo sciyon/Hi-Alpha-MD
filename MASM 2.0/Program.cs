@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using MASM.DataAccess.Data;
 using MASM.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using MASM.DataAccess.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +29,10 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IClinicRepository, ClinicRepository>();
+builder.Services.AddScoped<IUserClinicRepository, UserClinicRepository>();
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+
+builder.Services.AddControllersWithViews();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
 	.AddCookie(options =>

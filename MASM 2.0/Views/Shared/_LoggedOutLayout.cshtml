@@ -5,16 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-primary border-bottom box-shadow m-0 p-0">
             <div class="container-fluid m-0 p-0">
-                <a class="navbar-brand m-0 p-0" asp-area="" asp-controller="Home" asp-action="Index">
-                    <img src="~/img/mainLogo.jpg" alt="MASM Logo" height="80" width="170" class="">
-                </a>
+                <div class="bg-white d-flex align-items-center col-md-2 col-lg-2 p-0">
+                    <a asp-area="" asp-controller="Home" asp-action="Index" class="w-100">
+                        <img src="~/img/mainLogo.jpg" alt="MASM Logo" class="w-100 d-block" style="max-height: 100px; object-fit: contain;">
+                    </a>
+                </div>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -35,12 +38,12 @@
                         </li>
                     </ul>
                 </div>
-                <button class="custom-button me-2">
+                <button class="custom-button me-3">
                     <a class="nav-link fw-bold fs-5" asp-controller="User" asp-action="Register">
                         <i class="bi bi-card-checklist"></i> Register
                     </a>
                 </button>
-                <button class="custom-button">
+                <button class="custom-button  me-4">
                     <a class="nav-link fw-bold fs-5" asp-controller="User" asp-action="Login">
                         <i class="bi bi-box-arrow-in-left"></i> Login
                     </a>
@@ -50,12 +53,12 @@
         </nav>
     </header>
     <div class="container">
-        <main role="main" class="pb-3">
+        <main role="main" class="pb-3 flex-grow-1">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted bg-primary">
+    <footer class="border-top footer text-muted bg-primary mt-auto">
         <div class="container">
             Made with <i class="bi bi-heart-fill"></i> by Erwin Antepuesto
         </div>
