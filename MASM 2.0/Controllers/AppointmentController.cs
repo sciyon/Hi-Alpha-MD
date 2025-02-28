@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Linq;
 using Newtonsoft.Json;
 using System.Globalization;
-using Microsoft.Extensions.Logging; // Added for logging
+using Microsoft.Extensions.Logging;
 
 namespace MASM.Controllers
 {
@@ -25,50 +25,31 @@ namespace MASM.Controllers
 		private readonly IClinicRepository _clinicRepository;
 		private readonly IUserClinicRepository _userClinicRepository;
 		private readonly IUserRepository _userRepository;
-		private readonly ILogger<AppointmentController> _logger; // Added logger
+		private readonly ILogger<AppointmentController> _logger;
 
-		public AppointmentController
-			(
-				IAppointmentRepository appointmentRepository,
-				UserManager<User> userManager,
-				IClinicRepository clinicRepository,
-				IUserClinicRepository userClinicRepository,
-				IUserRepository userRepository,
-				ILogger<AppointmentController> logger // Inject logger
-			)
+		public AppointmentController(
+			IAppointmentRepository appointmentRepository,
+			UserManager<User> userManager,
+			IClinicRepository clinicRepository,
+			IUserClinicRepository userClinicRepository,
+			IUserRepository userRepository,
+			ILogger<AppointmentController> logger
+		)
 		{
 			_appointmentRepository = appointmentRepository;
 			_userManager = userManager;
 			_clinicRepository = clinicRepository;
 			_userClinicRepository = userClinicRepository;
 			_userRepository = userRepository;
-			_logger = logger; // Assign logger
+			_logger = logger;
 		}
 
 		// GET: Appointment/Index
 		[HttpGet]
-		public async Task<IActionResult> Index(
-			int clinicId = 0, // Make nullable
-			string range = "monthly",
-			AppointmentStatus? status = null,
-			DateTime? startDate = null,
-			string dateFilter = "future", // Default to "future"
-			string sortBy = "ascending",   // Default to "ascending"
-			int page = 1,
-			int pageSize = 10)
+		public async Task<IActionResult> Index(AppointmentIndexViewModel model)
 		{
 			var (appointments, totalCount) = await _appointmentRepository.GetAllAsync(
-				clinicId, range, status, startDate, page, pageSize, dateFilter, sortBy);
-
-			ViewBag.ClinicId = clinicId;
-			ViewBag.Range = range;
-			ViewBag.Status = status;
-			ViewBag.StartDate = startDate;
-			ViewBag.DateFilter = dateFilter;
-			ViewBag.SortBy = sortBy;
-			ViewBag.Page = page;
-			ViewBag.PageSize = pageSize;
-			ViewBag.TotalCount = totalCount;
+				model.ClinicId, model.Status, model.StartDate, model.Page, model.PageSize, model.DateFilter, model.SortBy);
 
 			// Pass clinics to the view
 			var clinics = await _clinicRepository.GetAllClinicsAsync();
@@ -90,7 +71,7 @@ namespace MASM.Controllers
 				Id = p.Id,
 				Name = (string.IsNullOrEmpty(p.LastName) || string.IsNullOrEmpty(p.FirstName)) ?
 				   "No Name" :
-				   $"{p.LastName}, {p.FirstName?.Substring(0, 1)}." // Format Patient Name and check if p.FirstName is null, ensure FirstName not null
+				   $"{p.LastName}, {p.FirstName?.Substring(0, 1)}."
 			}), "Id", "Name");
 
 			ViewBag.PatientList = patientSelectList;
@@ -98,25 +79,30 @@ namespace MASM.Controllers
 			// 2. Default Clinic and Users to empty lists
 			ViewBag.DoctorList = new SelectList(Enumerable.Empty<SelectListItem>(), "Value", "Text");
 
-			//3. Set Status
+			// 3. Set Status
 			ViewBag.StatusList = new SelectList(new List<AppointmentStatus> { AppointmentStatus.Confirmed, AppointmentStatus.Pending }, AppointmentStatus.Pending);
 
 			return View();
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> LoadDoctors(int clinicId)
+		public async Task<IActionResult> LoadDoctors(string clinicId)
 		{
-			//Gets the doctor from that clinic through the clinicId
-			var doctors = await _userClinicRepository.GetStaff(clinicId, "Doctor");
+			// Gets the doctor from that clinic through the clinicId
+			if (!int.TryParse(clinicId, out int clinicIdInt))
+			{
+				return BadRequest("Invalid Clinic ID format.");
+			}
 
-			//Converts the data into the format needed
+			var doctors = await _userClinicRepository.GetStaff(clinicIdInt, "Doctor");
+
+			// Converts the data into the format needed
 			var doctorSelectList = doctors.Select(d => new
 			{
 				Id = d.Id,
 				Name = (string.IsNullOrEmpty(d.LastName) || string.IsNullOrEmpty(d.FirstName)) ?
 				   "No Name" :
-				   $"Dr. {d.LastName}, {d.FirstName?.Substring(0, 1)}." // Format Doctor Name, ensure FirstName not null
+				   $"Dr. {d.LastName}, {d.FirstName?.Substring(0, 1)}."
 			}).ToList();
 
 			return Json(doctorSelectList);
@@ -141,7 +127,7 @@ namespace MASM.Controllers
 		public async Task<IActionResult> Create(CreateAppointmentViewModel model)
 		{
 			_logger.LogInformation("Attempting to create appointment.");
-			_logger.LogInformation($"Model values: {JsonConvert.SerializeObject(model)}"); // Log the model
+			_logger.LogInformation($"Model values: {JsonConvert.SerializeObject(model)}");
 
 			if (ModelState.IsValid)
 			{
@@ -152,8 +138,8 @@ namespace MASM.Controllers
 
 					var appointment = new Appointment
 					{
-						DoctorId = model.DoctorId, // Doctor can be selected
-						PatientId = model.PatientId, // Patient can be selected
+						DoctorId = model.DoctorId,
+						PatientId = model.PatientId,
 						ReasonForVisit = model.ReasonForVisit,
 						AdditionalInfo = model.AdditionalInfo,
 						AppointmentDate = model.AppointmentDateTime,
@@ -169,20 +155,18 @@ namespace MASM.Controllers
 					await _appointmentRepository.CreateAsync(appointment);
 					_logger.LogInformation("Appointment created successfully in the database.");
 
-					TempData["SuccessMessage"] = "Appointment created successfully!";  // Optional success message
+					TempData["SuccessMessage"] = "Appointment created successfully!";
 					return RedirectToAction(nameof(Index), new { clinicId = model.ClinicId });
 				}
 				catch (Exception ex)
 				{
-					// Log the exception
 					_logger.LogError(ex, "Error creating appointment.");
 					ModelState.AddModelError("", "An error occurred while creating the appointment. Please try again.");
-					TempData["ErrorMessage"] = "An error occurred while creating the appointment.";  // Optional error message
+					TempData["ErrorMessage"] = "An error occurred while creating the appointment.";
 					return View(model);
 				}
 			}
 
-			// If we got this far, something failed, redisplay form
 			_logger.LogWarning("Model state is invalid. Redisplaying the form.");
 			foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
 			{
@@ -202,8 +186,8 @@ namespace MASM.Controllers
 				Id = d.Id,
 				Name = (string.IsNullOrEmpty(d.LastName) || string.IsNullOrEmpty(d.FirstName)) ?
 				   "No Name" :
-				   $"Dr. {d.LastName}, {d.FirstName?.Substring(0, 1)}." // Format Doctor Name, ensure FirstName not null
-			}), "Id", "Name", model.DoctorId);  //Preserve selection
+				   $"Dr. {d.LastName}, {d.FirstName?.Substring(0, 1)}."
+			}), "Id", "Name", model.DoctorId);
 
 			ViewBag.DoctorList = doctorSelectList;
 
@@ -216,20 +200,165 @@ namespace MASM.Controllers
 				{
 					patients.Add(user);
 				}
-
 			}
 
-			// Convert to SelectList
 			var patientSelectList = new SelectList(patients.Select(p => new {
 				Id = p.Id,
 				Name = (string.IsNullOrEmpty(p.LastName) || string.IsNullOrEmpty(p.FirstName)) ?
 				   "No Name" :
-				   $"{p.LastName}, {p.FirstName?.Substring(0, 1)}." // Format Patient Name and check if p.FirstName is null, ensure FirstName not null
-			}), "Id", "Name", model.PatientId); //Preserve selection
+				   $"{p.LastName}, {p.FirstName?.Substring(0, 1)}."
+			}), "Id", "Name", model.PatientId);
 
 			ViewBag.PatientList = patientSelectList;
-			ViewBag.StatusList = new SelectList(Enum.GetValues(typeof(AppointmentStatus)).Cast<AppointmentStatus>(), model.Status); //Correct and Preserve selection
+			ViewBag.StatusList = new SelectList(Enum.GetValues(typeof(AppointmentStatus)).Cast<AppointmentStatus>(), model.Status);
 
+			return View(model);
+		}
+
+		//GET: Appointment/View/{appointmentId}
+		public async Task<IActionResult> View(Guid appointmentId)
+		{
+			var appointment = await _appointmentRepository.GetByIdAsync(appointmentId);
+			if (appointment == null)
+			{
+				return NotFound("Appointment not found.");
+			}
+
+			// Use ViewAppointmentViewModel to display appointment details
+			var viewModel = new ViewAppointmentViewModel
+			{
+				Id = appointment.Id.ToString(),
+				ClinicName = appointment.Clinic.Name,
+				DoctorName = appointment.Doctor.FirstName + " " + appointment.Doctor.LastName,
+				PatientName = appointment.Patient.FirstName + " " + appointment.Patient.LastName,
+				Status = appointment.Status,
+				ReasonForVisit = appointment.ReasonForVisit,
+				AdditionalInfo = appointment.AdditionalInfo,
+				AppointmentDateTime = appointment.AppointmentDate
+			};
+
+			return View(viewModel);
+		}
+
+		// GET: Appointment/Edit/{appointmentId}
+		[HttpGet]
+		public async Task<IActionResult> Edit(Guid appointmentId)
+		{
+			var appointment = await _appointmentRepository.GetByIdAsync(appointmentId);
+			if (appointment == null)
+			{
+				return NotFound("Appointment not found.");
+			}
+
+			// Fetch clinics for the dropdown
+			var clinics = await _clinicRepository.GetAllClinicsAsync();
+			ViewBag.ClinicList = new SelectList(clinics, "Id", "Name", appointment.ClinicId);
+
+			// Fetch doctors for the selected clinic
+			var doctors = await _userClinicRepository.GetStaff(appointment.ClinicId, "Doctor");
+			var doctorSelectList = new SelectList(doctors.Select(d => new
+			{
+				Id = d.Id,
+				Name = (string.IsNullOrEmpty(d.LastName) || string.IsNullOrEmpty(d.FirstName)) ?
+					"No Name" :
+					$"Dr. {d.LastName}, {d.FirstName?.Substring(0, 1)}."
+			}), "Id", "Name", appointment.DoctorId);
+
+			ViewBag.DoctorList = doctorSelectList;
+
+			// Fetch patients
+			var patients = await _userRepository.GetPatients();
+			var patientSelectList = new SelectList(patients.Select(p => new
+			{
+				Id = p.Id,
+				Name = (string.IsNullOrEmpty(p.LastName) || string.IsNullOrEmpty(p.FirstName)) ?
+					"No Name" :
+					$"{p.LastName}, {p.FirstName?.Substring(0, 1)}."
+			}), "Id", "Name", appointment.PatientId);
+
+			ViewBag.PatientList = patientSelectList;
+
+			// Set status list
+			ViewBag.StatusList = new SelectList(Enum.GetValues(typeof(AppointmentStatus)).Cast<AppointmentStatus>(), appointment.Status);
+
+			var viewModel = new EditAppointmentViewModel
+			{
+				Id = appointment.Id.ToString(),
+				ClinicId = appointment.ClinicId, // Now matches the type
+				DoctorId = appointment.DoctorId,
+				PatientId = appointment.PatientId,
+				Status = appointment.Status,
+				ReasonForVisit = appointment.ReasonForVisit,
+				AdditionalInfo = appointment.AdditionalInfo,
+				AppointmentDateTime = appointment.AppointmentDate
+			};
+
+			return View(viewModel);
+		}
+
+		// POST: Appointment/Edit/{appointmentId}
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Edit(EditAppointmentViewModel model)
+		{
+			if (ModelState.IsValid)
+			{
+				try
+				{
+					var appointment = await _appointmentRepository.GetByIdAsync(new Guid(model.Id));
+					if (appointment == null)
+					{
+						return NotFound("Appointment not found.");
+					}
+
+					appointment.ClinicId = model.ClinicId; // Now matches the type
+					appointment.DoctorId = model.DoctorId;
+					appointment.PatientId = model.PatientId;
+					appointment.Status = model.Status;
+					appointment.ReasonForVisit = model.ReasonForVisit;
+					appointment.AdditionalInfo = model.AdditionalInfo;
+					appointment.AppointmentDate = model.AppointmentDateTime;
+
+					await _appointmentRepository.UpdateAsync(appointment);
+
+					TempData["SuccessMessage"] = "Appointment updated successfully!";
+					return RedirectToAction(nameof(Index));
+				}
+				catch (Exception ex)
+				{
+					_logger.LogError(ex, "Error updating appointment.");
+					ModelState.AddModelError("", "An error occurred while updating the appointment. Please try again.");
+					TempData["ErrorMessage"] = "An error occurred while updating the appointment.";
+				}
+			}
+
+			// If we got this far, something failed; redisplay form
+			var clinics = await _clinicRepository.GetAllClinicsAsync();
+			ViewBag.ClinicList = new SelectList(clinics, "Id", "Name", model.ClinicId);
+
+			var doctors = await _userClinicRepository.GetStaff(model.ClinicId, "Doctor");
+			var doctorSelectList = new SelectList(doctors.Select(d => new
+			{
+				Id = d.Id,
+				Name = (string.IsNullOrEmpty(d.LastName) || string.IsNullOrEmpty(d.FirstName)) ?
+					"No Name" :
+					$"Dr. {d.LastName}, {d.FirstName?.Substring(0, 1)}."
+			}), "Id", "Name", model.DoctorId);
+
+			ViewBag.DoctorList = doctorSelectList;
+
+			var patients = await _userRepository.GetPatients();
+			var patientSelectList = new SelectList(patients.Select(p => new
+			{
+				Id = p.Id,
+				Name = (string.IsNullOrEmpty(p.LastName) || string.IsNullOrEmpty(p.FirstName)) ?
+					"No Name" :
+					$"{p.LastName}, {p.FirstName?.Substring(0, 1)}."
+			}), "Id", "Name", model.PatientId);
+
+			ViewBag.PatientList = patientSelectList;
+
+			ViewBag.StatusList = new SelectList(Enum.GetValues(typeof(AppointmentStatus)).Cast<AppointmentStatus>(), model.Status);
 
 			return View(model);
 		}

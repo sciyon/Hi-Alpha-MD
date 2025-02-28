@@ -28,7 +28,6 @@ namespace MASM.DataAccess.Repositories
 
 		public async Task<(IEnumerable<Appointment> Appointments, int TotalCount)> GetAllAsync(
 			int clinicId,
-			string range = "monthly",
 			AppointmentStatus? status = null,
 			DateTime? startDate = null,
 			int page = 1,
@@ -41,18 +40,20 @@ namespace MASM.DataAccess.Repositories
 				.Include(a => a.Patient)
 				.Include(a => a.Clinic);
 
+			// Filter by clinic
 			if (clinicId != 0)
 			{
 				query = query.Where(a => a.ClinicId == clinicId);
 			}
 
+			// Filter by status
 			if (status.HasValue)
 			{
 				query = query.Where(a => a.Status == status.Value);
 			}
 
+			// Apply date filter (past or future)
 			DateTime today = DateTime.UtcNow.Date;
-
 			if (dateFilter == "past")
 			{
 				query = query.Where(a => a.AppointmentDate < today);
@@ -72,23 +73,6 @@ namespace MASM.DataAccess.Repositories
 				query = query.OrderByDescending(a => a.AppointmentDate);
 			}
 
-			DateTime rangeStart, rangeEnd;
-
-			if (range == "weekly")
-			{
-				// Calculate the start and end of the week
-				rangeStart = startDate?.Date ?? DateTime.UtcNow.Date.AddDays(-(int)DateTime.UtcNow.DayOfWeek);
-				rangeEnd = rangeStart.AddDays(7);
-			}
-			else // Default to monthly
-			{
-				// Calculate the start and end of the month
-				rangeStart = startDate?.Date ?? new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
-				rangeEnd = rangeStart.AddMonths(1).AddDays(-1);
-			}
-
-			query = query.Where(a => a.AppointmentDate >= rangeStart && a.AppointmentDate <= rangeEnd);
-
 			// Get the total count for pagination
 			var totalCount = await query.CountAsync();
 
@@ -100,7 +84,6 @@ namespace MASM.DataAccess.Repositories
 
 			return (appointments, totalCount);
 		}
-
 		public async Task CreateAsync(Appointment appointment)
 		{
 			_context.Appointments.Add(appointment);

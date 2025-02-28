@@ -9,14 +9,13 @@ namespace MASM.DataAccess.Repositories
 	{
 		Task<Appointment> GetByIdAsync(Guid id);
 		Task<(IEnumerable<Appointment> Appointments, int TotalCount)> GetAllAsync(
-			int clinicId,
-			string range = "monthly",
-			AppointmentStatus? status = null,
-			DateTime? startDate = null,
-			int page = 1,
-			int pageSize = 10,
-			string dateFilter = "future",
-			string sortBy = "ascending");
+				int clinicId,
+				AppointmentStatus? status = null,
+				DateTime? startDate = null,
+				int page = 1,
+				int pageSize = 10,
+				string dateFilter = "future",
+				string sortBy = "ascending");
 		Task CreateAsync(Appointment appointment);
 		Task UpdateAsync(Appointment appointment);
 		Task DeleteAsync(Guid id);
